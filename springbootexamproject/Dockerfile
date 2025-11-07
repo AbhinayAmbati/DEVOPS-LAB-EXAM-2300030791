@@ -1,14 +1,17 @@
 # Stage 1: Build the app
-FROM maven:3.9.5-jdk-21 AS builder
+FROM eclipse-temurin:21-jdk AS builder
 
 WORKDIR /app
 
-# Use the container's Maven (no mvnw required)
+COPY mvnw .          
+COPY .mvn/ .mvn
+
+RUN chmod +x mvnw
+
 COPY pom.xml ./
 COPY src ./src
 
-# Batch mode (-B) for CI, skip tests to speed up image builds
-RUN mvn -B clean package -DskipTests
+RUN ./mvnw clean package -DskipTests
 
 # Stage 2: Run the app
 FROM eclipse-temurin:21-jdk
